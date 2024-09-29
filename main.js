@@ -2,7 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
 import GUI from 'lil-gui'
-import { radians } from 'three/webgpu'
+import {Timer} from 'three/addons/misc/Timer.js'
 
 // Creating Canvas
 const createCanvas = document.createElement('canvas')
@@ -22,7 +22,7 @@ const scene = new THREE.Scene()
 
 // Galaxy
 const parameters = {
-  count: 100000,
+  count: 50000,
   size: 0.01,
   radius: 5,
   branches: 3,
@@ -117,10 +117,10 @@ const generateGalaxy = () => {
 generateGalaxy()
 
 // Parameter Tweaks
-gui.add(parameters, 'count').min(10).max(1000000).step(10).onFinishChange(generateGalaxy)
-gui.add(parameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(generateGalaxy)
-gui.add(parameters, 'radius').min(0.01).max(20).step(0.01).onFinishChange(generateGalaxy)
-gui.add(parameters, 'branches').min(2).max(20).step(1).onFinishChange(generateGalaxy)
+gui.add(parameters, 'count').min(10).max(75000).step(10).onFinishChange(generateGalaxy)
+gui.add(parameters, 'size').min(0.001).max(0.05).step(0.001).onFinishChange(generateGalaxy)
+gui.add(parameters, 'radius').min(0.01).max(10).step(0.01).onFinishChange(generateGalaxy)
+gui.add(parameters, 'branches').min(2).max(10).step(1).onFinishChange(generateGalaxy)
 gui.add(parameters, 'spin').min(-5).max(5).step(0.001).onFinishChange(generateGalaxy)
 gui.add(parameters, 'randomness').min(0).max(2).step(0.001).onFinishChange(generateGalaxy)
 gui.add(parameters, 'randomnessPower').min(1).max(10).step(0.001).onFinishChange(generateGalaxy)
@@ -136,7 +136,7 @@ const size = {
 // Camera
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height)
 camera.position.z = 10
-camera.position.y = 3
+camera.position.y = 5
 scene.add(camera)
 
 // Renderer
@@ -161,11 +161,21 @@ window.addEventListener('resize', () => {
 // Orbit Controls
 const controls = new OrbitControls(camera, canvas)
 
+// Timer
+const timer = new Timer()
+
 // Animating Function
 const animate = () => {
+  // Elapsed Time
+  timer.update()
+  const elapsed = timer.getElapsed()
+  
   // Orbit Controls
   controls.update()
   controls.enableDamping = true
+
+  // Slow Galaxy Animation
+  points.rotation.y = elapsed / 32
 
   // Rendering Scene
   renderer.render(scene, camera)
