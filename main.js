@@ -28,7 +28,9 @@ const parameters = {
   branches: 3,
   spin: 1,
   randomness: 0.02,
-  randomnessPower: 3
+  randomnessPower: 3,
+  insideColor: '#ff6030',
+  outsideColor: '#1b3984',
 }
 
 // Galaxy variables
@@ -48,6 +50,10 @@ const generateGalaxy = () => {
   // Geometry
   particleGeometry = new THREE.BufferGeometry()
   const positions = new Float32Array(parameters.count * 3)
+  const colors = new Float32Array(parameters.count * 3)
+
+  const insideColor = new THREE.Color(parameters.insideColor)
+  const outsideColor = new THREE.Color(parameters.outsideColor)
   
   // Random Positions
   for(let i = 0; i < parameters.count * 3; i++){
@@ -66,9 +72,17 @@ const generateGalaxy = () => {
     const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 :-1)
     const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 :-1)
 
+    // Position
     positions[x] = Math.cos(branchAngle + spinAngle) * radius + randomX
     positions[y] = randomY
     positions[z] = Math.sin(branchAngle + spinAngle) * radius + randomZ
+
+    //Color
+    const mixedColor = insideColor.clone()
+    mixedColor.lerp(outsideColor, radius / parameters.radius)
+    colors[x] = mixedColor.r
+    colors[y] = mixedColor.g
+    colors[z] = mixedColor.b
   }
 
   // Setting Position Attribute For X,Y,Z
@@ -77,12 +91,19 @@ const generateGalaxy = () => {
     new THREE.BufferAttribute(positions, 3)
   )
 
+    // Setting Color Attribute For R,G,B
+    particleGeometry.setAttribute(
+      'color', 
+      new THREE.BufferAttribute(colors, 3)
+    )
+
   // Material
   particleMaterial = new THREE.PointsMaterial({
     size: parameters.size,
     sizeAttenuation: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
+    vertexColors: true
   })
 
   // Points
@@ -103,6 +124,8 @@ gui.add(parameters, 'branches').min(2).max(20).step(1).onFinishChange(generateGa
 gui.add(parameters, 'spin').min(-5).max(5).step(0.001).onFinishChange(generateGalaxy)
 gui.add(parameters, 'randomness').min(0).max(2).step(0.001).onFinishChange(generateGalaxy)
 gui.add(parameters, 'randomnessPower').min(1).max(10).step(0.001).onFinishChange(generateGalaxy)
+gui.addColor(parameters, 'insideColor').onFinishChange(generateGalaxy)
+gui.addColor(parameters, 'outsideColor').onFinishChange(generateGalaxy)
 
 // Window Size
 const size = {
