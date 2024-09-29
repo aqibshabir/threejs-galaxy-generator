@@ -13,7 +13,9 @@ document.body.prepend(createCanvas)
 const canvas = document.querySelector('canvas.webgl')
 
 // Tweaks GUI
-const gui = new GUI()
+const gui = new GUI({
+  title: 'Generate Galaxy'
+})
 
 // Scene
 const scene = new THREE.Scene()
@@ -23,7 +25,10 @@ const parameters = {
   count: 100000,
   size: 0.01,
   radius: 5,
-  branches: 3
+  branches: 3,
+  spin: 1,
+  randomness: 0.02,
+  randomnessPower: 3
 }
 
 // Galaxy variables
@@ -46,17 +51,24 @@ const generateGalaxy = () => {
   
   // Random Positions
   for(let i = 0; i < parameters.count * 3; i++){
+
     // Axis Variables
     const x = i * 3
     const y = x + 1
     const z = y + 1
 
+    // Adding Galaxy Shape 
     const radius = Math.random() * parameters.radius
+    const spinAngle = radius * parameters.spin
     const branchAngle = (i % parameters.branches )/ parameters.branches * Math.PI * 2
 
-    positions[x] = Math.cos(branchAngle) * radius
-    positions[y] = 0
-    positions[z] = Math.sin(branchAngle) * radius
+    const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 :-1)
+    const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 :-1)
+    const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 :-1)
+
+    positions[x] = Math.cos(branchAngle + spinAngle) * radius + randomX
+    positions[y] = randomY
+    positions[z] = Math.sin(branchAngle + spinAngle) * radius + randomZ
   }
 
   // Setting Position Attribute For X,Y,Z
@@ -88,6 +100,9 @@ gui.add(parameters, 'count').min(10).max(1000000).step(10).onFinishChange(genera
 gui.add(parameters, 'size').min(0.001).max(0.1).step(0.001).onFinishChange(generateGalaxy)
 gui.add(parameters, 'radius').min(0.01).max(20).step(0.01).onFinishChange(generateGalaxy)
 gui.add(parameters, 'branches').min(2).max(20).step(1).onFinishChange(generateGalaxy)
+gui.add(parameters, 'spin').min(-5).max(5).step(0.001).onFinishChange(generateGalaxy)
+gui.add(parameters, 'randomness').min(0).max(2).step(0.001).onFinishChange(generateGalaxy)
+gui.add(parameters, 'randomnessPower').min(1).max(10).step(0.001).onFinishChange(generateGalaxy)
 
 // Window Size
 const size = {
