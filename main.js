@@ -17,12 +17,52 @@ const gui = new GUI()
 // Scene
 const scene = new THREE.Scene()
 
-// Test Cube
-const cube = new THREE.Mesh(
-  new THREE.BoxGeometry(1,1,1),
-  new THREE.MeshBasicMaterial()
-)
-scene.add(cube)
+// Galaxy
+const parameters = {
+  count: 1000,
+
+}
+
+const generateGalaxy = () => {
+  // Geometry
+  const particleGeometry = new THREE.BufferGeometry()
+  const positions = new Float32Array(parameters.count * 3)
+  
+  // Random Positions
+  for(let i = 0; i < parameters.count * 3; i++){
+    // Axis Variables
+    const x = i * 3
+    const y = x + 1
+    const z = y + 1
+
+    positions[x] = (Math.random() - 0.5) * 3
+    positions[y] = (Math.random() - 0.5) * 3
+    positions[z] = (Math.random() - 0.5) * 3
+  }
+
+  // Setting Position Attribute For X,Y,Z
+  particleGeometry.setAttribute(
+    'position', 
+    new THREE.BufferAttribute(positions, 3)
+  )
+
+  // Material
+  const particleMaterial = new THREE.PointsMaterial({
+    size: 0.02,
+    sizeAttenuation: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  })
+
+  // Particles
+  const particles = new THREE.Points(
+    particleGeometry, particleMaterial
+  )
+
+  scene.add(particles)
+
+}
+generateGalaxy()
 
 // Window Size
 const size = {
