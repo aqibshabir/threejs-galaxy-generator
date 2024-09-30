@@ -14,8 +14,10 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Tweaks GUI
 const gui = new GUI({
-  title: 'Generate Galaxy'
+  title: 'Generate Galaxy',
 })
+
+gui.close()
 
 // Scene
 const scene = new THREE.Scene()
@@ -68,9 +70,9 @@ const generateGalaxy = () => {
     const spinAngle = radius * parameters.spin
     const branchAngle = (i % parameters.branches )/ parameters.branches * Math.PI * 2
 
-    const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 :-1)
-    const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 :-1)
-    const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 :-1)
+    const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1)
+    const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1)
+    const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1)
 
     // Position
     positions[x] = Math.cos(branchAngle + spinAngle) * radius + randomX
